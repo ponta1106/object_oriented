@@ -1,6 +1,7 @@
 require 'test/unit'
 require './vending_machine'
-require './drink'
+require './drink_type'
+require './coin'
 
 class VendingMachineTest < Test::Unit::TestCase
   def setup
@@ -8,70 +9,73 @@ class VendingMachineTest < Test::Unit::TestCase
   end
 
   def test500円でコーラを購入
-    drink = @vm.buy(500, Drink::COKE)
+    drink = @vm.buy(Coin::FIVE_HUNDRED, DrinkType::COKE)
     change = @vm.refund
 
-    assert_equal(Drink::COKE, drink.kind)
-    assert_equal(400, change)
+    assert_equal(DrinkType::COKE, drink.kind)
+    assert_equal('400', change.to_s)
   end
 
   def test10円ではコーラは買えない
-    drink = @vm.buy(10, Drink::COKE)
+    drink = @vm.buy(10, DrinkType::COKE)
     change = @vm.refund
 
     assert_equal(nil, drink)
-    assert_equal(10, change)
+    assert_equal('10', change.to_s)
   end
 
   def testコーラの在庫が無いときにコーラは買えない
-    @vm.buy(100, Drink::COKE)
-    @vm.buy(100, Drink::COKE)
-    @vm.buy(100, Drink::COKE)
-    @vm.buy(100, Drink::COKE)
-    @vm.buy(100, Drink::COKE)
-    drink = @vm.buy(100, Drink::COKE)
+    @vm.buy(Coin::ONE_HUNDRED, DrinkType::COKE)
+    @vm.buy(Coin::ONE_HUNDRED, DrinkType::COKE)
+    @vm.buy(Coin::ONE_HUNDRED, DrinkType::COKE)
+    @vm.buy(Coin::ONE_HUNDRED, DrinkType::COKE)
+    @vm.buy(Coin::ONE_HUNDRED, DrinkType::COKE)
+    drink = @vm.buy([Coin::ONE_HUNDRED], DrinkType::COKE)
     change = @vm.refund
 
     assert_equal(nil, drink)
-    assert_equal(100, change)
+    assert_equal('100', change.to_s)
   end
 
   def testダイエットコーラの在庫が無いときにコーラは買えない
-    @vm.buy(100, Drink::DIET_COKE)
-    @vm.buy(100, Drink::DIET_COKE)
-    @vm.buy(100, Drink::DIET_COKE)
-    @vm.buy(100, Drink::DIET_COKE)
-    @vm.buy(100, Drink::DIET_COKE)
-    drink = @vm.buy(100, Drink::DIET_COKE)
+    @vm.buy(Coin::ONE_HUNDRED, DrinkType::DIET_COKE)
+    @vm.buy(Coin::ONE_HUNDRED, DrinkType::DIET_COKE)
+    @vm.buy(Coin::ONE_HUNDRED, DrinkType::DIET_COKE)
+    @vm.buy(Coin::ONE_HUNDRED, DrinkType::DIET_COKE)
+    @vm.buy(Coin::ONE_HUNDRED, DrinkType::DIET_COKE)
+    drink = @vm.buy(Coin::ONE_HUNDRED, DrinkType::DIET_COKE)
     change = @vm.refund
 
     assert_equal(nil, drink)
-    assert_equal(100, change)
+    assert_equal([Coin::ONE_HUNDRED], change)
+    assert_equal('100', change.to_s)
   end
 
   def testお茶の在庫が無いときにコーラは買えない
-    @vm.buy(100, Drink::TEA)
-    @vm.buy(100, Drink::TEA)
-    @vm.buy(100, Drink::TEA)
-    @vm.buy(100, Drink::TEA)
-    @vm.buy(100, Drink::TEA)
-    drink = @vm.buy(100, Drink::TEA)
+    @vm.buy(Coin::ONE_HUNDRED, DrinkType::TEA)
+    @vm.buy(Coin::ONE_HUNDRED, DrinkType::TEA)
+    @vm.buy(Coin::ONE_HUNDRED, DrinkType::TEA)
+    @vm.buy(Coin::ONE_HUNDRED, DrinkType::TEA)
+    @vm.buy(Coin::ONE_HUNDRED, DrinkType::TEA)
+    drink = @vm.buy(Coin::ONE_HUNDRED, DrinkType::TEA)
     change = @vm.refund
 
     assert_equal(nil, drink)
-    assert_equal(100, change)
+    assert_equal([Coin:ONE_HUNDRED], change)
+    assert_equal('100', change.to_s)
   end
 
   def test釣り銭が足りないときにコーラは買えない
-    @vm.buy(500, Drink::COKE)
+    @vm.buy([Coin::FIVE_HUNDRED], DrinkType::COKE)
     @vm.refund
-    @vm.buy(500, Drink::COKE)
+    @vm.buy([Coin::FIVE_HUNDRED], DrinkType::COKE)
     @vm.refund
-    drink = @vm.buy(500, Drink::COKE)
+    drink = @vm.buy(Coin::FIVE_HUNDRED], DrinkType::COKE)
     change = @vm.refund
 
     assert_equal(nil, drink)
-    assert_equal(500, change)
+    assert_equal([Coin::FIVE_HUNDRED], change)
+    assert_equal('500', change.to_s)
   end
 
 end

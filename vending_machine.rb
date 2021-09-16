@@ -1,64 +1,77 @@
 require './drink'
+require './coin'
+require './stock'
+require './stock_of_100yen'
+require './change'
 
 class VendingMachine
 
   def initialize
-    @quantity_of_coke = 5 # コーラの在庫数
-    @quantity_of_diet_coke = 5 # ダイエットコーラの在庫数
-    @quantity_of_tea = 5 # お茶の在庫数
-    @number_of_100yen = 10 # 100円玉の在庫
-    @change = 0 # お釣り
+    @stock_of_coke = Stock.new(5) # コーラの在庫数
+    @stock_of_diet_coke = Stock.new(5) # ダイエットコーラの在庫数
+    @stock_of_tea = Stock.new(5) # お茶の在庫数
+    @number_of_100yen = [Coin::ONE_HUNDRED] * 10 # 100円玉の在庫
+    @change = [] # お釣り
+    @stock_of_100yen = StockOf100Yen.new(10)
+    @change = Change.new
   end
 
-  def buy(i, kind_of_drink)
-    # 100円と500円だけ受け付ける
-    if i != 100 && i != 500
-      @change += i
+  def buy(payment, kind_of_drink)
+    # [Coin::ONE_HUNDRED]円と500円だけ受け付ける
+    if payment != Coin::ONE_HUNDRED && payment != Coin::FIVE_HUNDRED
+      @change.add(payment)
       return nil
     end
 
-    if kind_of_drink == Drink::COKE && @quantity_of_coke == 0
-      @change += i
+    if kind_of_drink == DrinkType::COKE && @stock_of_coke.quantity == 0
+      @change.add(payment)
       return nil
-    elsif kind_of_drink == Drink::DIET_COKE && @quantity_of_diet_coke == 0 then
-      @change += i
+    elsif kind_of_drink == DrinkType::DIET_COKE && @stock_of_diet_coke.quantity == 0 then
+      @change.add(payment)
       return nil
-    elsif kind_of_drink == Drink::TEA && @quantity_of_tea == 0 then
-      @change += i
+    elsif kind_of_drink == DrinkType::TEA && @stock_of_tea.quantity == 0 then
+      @change.add(payment)
       return nil
     end
 
     # 釣り銭不足
-    if i == 500 && @number_of_100yen < 4
-      @change += i
+    if payment == Coin::FIVE_HUNDRED && @number_of_100yen.length < 4
+      @change.add(payment)
       return nil
     end
 
-    if i == 100
-      @number_of_100yen += 1
-    elsif i == 500 then
-      # 400円のお釣り
-      @change += (i - 100)
-      # 100円玉を釣り銭に使える
-      @number_of_100yen -= (i - 100) / 100
+    if payment == Coin::ONE_HUNDRED
+      @number_of_100yen.add(payment)
+    elsif payment == Coin::FIVE_HUNDRED then
+      @change = @change.concat(calculate_change)
+      @change.add_all(calculate_change)
     end
 
-    if kind_of_drink == Drink::COKE
-      @quantity_of_coke -= 1
-    elsif kind_of_drink == Drink::DIET_COKE then
-      @quantity_of_diet_coke -= 1
+    if kind_of_drink == DrinkType::COKE
+      @stock_of_coke.decrement
+    elsif kind_of_drink == DrinkType::DIET_COKE then
+      @stock_of_diet_coke.decrement
     else
-      @quantity_of_tea -= 1
+      @stock_of_tea.decrement
     end
 
     Drink.new(kind_of_drink)
   end
 
   def refund
-    result = @change
-    @change = 0
+    result = @change.clone
+    @change.clear
     result
   end
 
-end
+  def calculate_change
+    @number_of_100yen.slice!(0, 4)
+    [Coin::ONE_HUNDRED] * 4
+    coins = []
+    4.times do
+      coins.push(@stock_of_100yen.pop)
+    end
+    coins
+  end
 
+end
