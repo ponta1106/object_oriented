@@ -12,4 +12,8 @@ class Stock
     @quantity -= 1
   end
 
+  def empty?
+    @quantity == 0
+  end
+
 end
