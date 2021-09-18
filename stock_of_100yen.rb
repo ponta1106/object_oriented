@@ -1,4 +1,6 @@
-class StockOf100Yen
+require './coin'
+
+class CashBox
 
   def initialize(quantity)
     @number_of_100yen = [Coin::ONE_HUNDRED] * quantity
