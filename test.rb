@@ -16,14 +16,6 @@ class VendingMachineTest < Test::Unit::TestCase
     assert_equal('400', change.to_s)
   end
 
-  def test10円ではコーラは買えない
-    drink = @vm.buy(10, DrinkType::COKE)
-    change = @vm.refund
-
-    assert_equal(nil, drink)
-    assert_equal('10', change.to_s)
-  end
-
   def testコーラの在庫が無いときにコーラは買えない
     @vm.buy(Coin::ONE_HUNDRED, DrinkType::COKE)
     @vm.buy(Coin::ONE_HUNDRED, DrinkType::COKE)

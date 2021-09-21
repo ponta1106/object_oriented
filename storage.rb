@@ -9,12 +9,13 @@ class Storage
     @stocks[DrinkType::TEA] = Stock.new(5)
   end
 
-  def empty?(type)
+  def not_have_stock?(type)
     @stocks[type].empty?
   end
 
-  def decrement(type)
+  def take_out(type)
     @stocks[type].decrement
+    Drink.new(type)
   end
 
 end
