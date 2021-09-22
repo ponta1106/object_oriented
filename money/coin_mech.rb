@@ -1,6 +1,6 @@
-require './cash_box'
-require './change'
-require './payment'
+require './money/cash_box'
+require './money/change'
+require './money/payment'
 
 class CoinMech
 

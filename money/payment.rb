@@ -1,5 +1,5 @@
-require './change'
-require './coin'
+require './money/change'
+require './money/coin'
 
 class Payment
 

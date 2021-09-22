@@ -1,5 +1,5 @@
-require './drink'
-require './drink_type'
+require './drink/drink'
+require './drink/drink_type'
 require './vending_machine'
 
 vm = VendingMachine.new
